@@ -1,1 +1,6 @@
-/* Estilos locales de App.tsx */
+@tailwind utilities;
+
+/* Opcional: Establecer una fuente global */
+body {
+  font-family: 'Arial', sans-serif;
+}

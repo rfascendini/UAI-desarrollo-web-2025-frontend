@@ -1,34 +1,80 @@
 export type LoginResponse = {
-  token: string; // JWT o session token que emite tu backend
+  token: string; // JWT o session token emitido por el backend
   user: { id: string; email: string; name?: string };
 };
 
+// ✅ Función de Login
 export async function login(
   email: string,
   password: string
 ): Promise<LoginResponse> {
-  const apiUrl = import.meta.env.VITE_API_URL + '/users/login';
-  if (!apiUrl) throw new Error('VITE_API_URL no está configurada');
+  console.log('Iniciando login para:', email);
+  console.log('BACKEND_API_URL:', import.meta.env.BACKEND_API_URL);
+
+  const baseUrl = import.meta.env.BACKEND_API_URL;
+  if (!baseUrl) throw new Error('BACKEND_API_URL no está configurada');
+
+  const apiUrl = `${baseUrl.replace(/\/$/, '')}/users/login`;
   console.log('Usando API URL:', apiUrl);
 
-  const res = await fetch(apiUrl, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    credentials: 'include', // si usás cookies httpOnly
-    body: JSON.stringify({ email, password }),
-  });
-  if (!res.ok) {
-    const msg = await res.text().catch(() => '');
-    throw new Error(msg || 'Error de autenticación');
+  try {
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      let msg = 'Error de autenticación';
+      try {
+        const errorData = await res.json();
+        msg = errorData?.message || msg;
+      } catch {
+        const text = await res.text().catch(() => '');
+        if (text) msg = text;
+      }
+      throw new Error(msg);
+    }
+
+    const data = await res.json();
+    if (!data?.token || !data?.user) {
+      throw new Error('Respuesta inválida del servidor');
+    }
+
+    return data;
+  } catch (err: unknown) {
+    console.error('Error en login:', err);
+    if (err instanceof Error) {
+      throw new Error(err.message);
+    }
+    throw new Error('Error de red');
   }
-  return res.json();
 }
 
+// ✅ Función para obtener usuario autenticado
 export async function me(token?: string) {
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    credentials: 'include',
-  });
-  if (!res.ok) return null;
-  return res.json();
+  const baseUrl = import.meta.env.BACKEND_API_URL;
+  if (!baseUrl) throw new Error('BACKEND_API_URL no está configurada');
+
+  const apiUrl = `${baseUrl.replace(/\/$/, '')}/auth/me`;
+
+  try {
+    const res = await fetch(apiUrl, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+      credentials: 'include',
+    });
+
+    if (!res.ok) {
+      if (res.status !== 401 && res.status !== 403)
+        console.warn('Error al obtener /auth/me:', res.status);
+      return null;
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err) {
+    console.error('Error al obtener perfil:', err);
+    return null;
+  }
 }

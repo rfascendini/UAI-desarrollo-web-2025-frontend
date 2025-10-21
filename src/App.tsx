@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from './components/Header';
 import SalaCard from './components/SalaCard';
 import CreateRoomModal from './components/CreateRoomModal';
-import { login, me, type LoginResponse } from './api/Auth';
+import { login, type LoginResponse } from './api/Auth';
 
 // Convierte boolean[] → PlayerData[] (agrega "Vos" si corresponde)
 const toPlayers = (arr: boolean[], mySlot?: number | null) =>

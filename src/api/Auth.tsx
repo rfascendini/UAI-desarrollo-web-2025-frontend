@@ -9,10 +9,10 @@ export async function login(
   password: string
 ): Promise<LoginResponse> {
   console.log('Iniciando login para:', email);
-  console.log('BACKEND_API_URL:', import.meta.env.BACKEND_API_URL);
+  console.log('VITE_API_KEY:', 'http://localhost:3000/api');
 
-  const baseUrl = import.meta.env.BACKEND_API_URL;
-  if (!baseUrl) throw new Error('BACKEND_API_URL no está configurada');
+  const baseUrl = 'http://localhost:3000/api';
+  if (!baseUrl) throw new Error('VITE_API_KEY no está configurada');
 
   const apiUrl = `${baseUrl.replace(/\/$/, '')}/users/login`;
   console.log('Usando API URL:', apiUrl);
@@ -21,7 +21,6 @@ export async function login(
     const res = await fetch(apiUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
 
@@ -38,7 +37,10 @@ export async function login(
     }
 
     const data = await res.json();
-    if (!data?.token || !data?.user) {
+
+    console.log(data);
+
+    if (!data.user) {
       throw new Error('Respuesta inválida del servidor');
     }
 
@@ -49,32 +51,5 @@ export async function login(
       throw new Error(err.message);
     }
     throw new Error('Error de red');
-  }
-}
-
-// ✅ Función para obtener usuario autenticado
-export async function me(token?: string) {
-  const baseUrl = import.meta.env.BACKEND_API_URL;
-  if (!baseUrl) throw new Error('BACKEND_API_URL no está configurada');
-
-  const apiUrl = `${baseUrl.replace(/\/$/, '')}/auth/me`;
-
-  try {
-    const res = await fetch(apiUrl, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-      credentials: 'include',
-    });
-
-    if (!res.ok) {
-      if (res.status !== 401 && res.status !== 403)
-        console.warn('Error al obtener /auth/me:', res.status);
-      return null;
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (err) {
-    console.error('Error al obtener perfil:', err);
-    return null;
   }
 }

@@ -28,12 +28,12 @@ export function RoomsList({
     <section className="min-h-0 flex-1 overflow-y-auto pr-2">
       {!profileExists && (
         <div className="rounded border border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-300">
-          Inicia sesion para ver y crear salas.
+          Iniciá sesión para ver y crear salas.
         </div>
       )}
       {profileExists && rooms.length === 0 && (
         <div className="rounded border border-dashed border-zinc-700 bg-zinc-950 p-8 text-center text-zinc-300">
-          Todavia no hay salas activas.
+          Todavía no hay salas activas.
         </div>
       )}
       {rooms.map((room) => (

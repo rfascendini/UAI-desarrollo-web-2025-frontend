@@ -33,10 +33,10 @@ export function AppHeader({
             Mi perfil
           </button>
           <button className="btn-secondary" onClick={onChangePassword}>
-            Cambiar password
+            Cambiar contraseña
           </button>
           <button className="btn-primary" onClick={onLogout}>
-            Cerrar sesion
+            Cerrar sesión
           </button>
         </div>
       ) : (
@@ -45,10 +45,10 @@ export function AppHeader({
             Registrarse
           </button>
           <button className="btn-secondary" onClick={onResetPassword}>
-            Recuperar password
+            Recuperar contraseña
           </button>
           <button className="btn-primary" onClick={onLogin}>
-            Iniciar sesion
+            Iniciar sesión
           </button>
         </div>
       )}

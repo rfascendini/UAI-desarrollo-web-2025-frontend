@@ -13,9 +13,9 @@ import { Modal } from './Modal';
 import type { AppModalProps, FormState } from './forms/formTypes';
 
 const MODAL_TITLES = {
-  reset: 'Recuperar password',
+  reset: 'Recuperar contraseña',
   profile: 'Mi perfil',
-  password: 'Cambiar password',
+  password: 'Cambiar contraseña',
   delete: 'Eliminar cuenta',
   create: 'Crear sala',
   edit: 'Editar sala',
@@ -29,7 +29,10 @@ const MODAL_TITLES = {
 
 export function AppModal(props: AppModalProps) {
   const [form, setForm] = useState<FormState>({});
-  const set = (key: string) => (value: string) => setForm((prev) => ({ ...prev, [key]: value }));
+  const set = (key: string) => (value: string) => {
+    props.onClearFieldError(key);
+    setForm((prev) => ({ ...prev, [key]: value }));
+  };
 
   const submit = (handler: () => Promise<void>) => (event: FormEvent) => {
     event.preventDefault();
@@ -38,13 +41,15 @@ export function AppModal(props: AppModalProps) {
 
   if (props.modal === 'login') {
     return (
-      <Modal title="Iniciar sesion" onClose={props.onClose}>
+      <Modal title="Iniciar sesión" onClose={props.onClose}>
+        <FormError message={props.formError} />
         <LoginForm
           form={form}
           set={set}
           submit={submit}
           loading={props.loading}
           onLogin={props.onLogin}
+          fieldErrors={props.fieldErrors}
         />
       </Modal>
     );
@@ -53,12 +58,14 @@ export function AppModal(props: AppModalProps) {
   if (props.modal === 'register') {
     return (
       <Modal title="Crear cuenta" onClose={props.onClose}>
+        <FormError message={props.formError} />
         <RegisterForm
           form={form}
           set={set}
           submit={submit}
           loading={props.loading}
           onRegister={props.onRegister}
+          fieldErrors={props.fieldErrors}
         />
       </Modal>
     );
@@ -68,8 +75,19 @@ export function AppModal(props: AppModalProps) {
 
   return (
     <Modal title={title} onClose={props.onClose}>
+      <FormError message={props.formError} />
       <ModalContent {...props} form={form} set={set} submit={submit} />
     </Modal>
+  );
+}
+
+function FormError({ message }: { message: string }) {
+  if (!message) return null;
+
+  return (
+    <div className="mb-3 rounded border border-red-500 bg-red-950/70 px-3 py-2 text-sm text-red-100" role="alert">
+      {message}
+    </div>
   );
 }
 

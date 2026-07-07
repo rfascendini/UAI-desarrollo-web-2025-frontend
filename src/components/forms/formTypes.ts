@@ -1,4 +1,5 @@
 import type { FormEvent } from 'react';
+import type { FieldErrors } from '../../api/api';
 import type { ModalName, Player, Room, UserProfile } from '../../types';
 
 export type MutationRunner = (action: (token: string) => Promise<void>) => Promise<void>;
@@ -22,6 +23,9 @@ export type AppModalProps = {
   onMutation: MutationRunner;
   onDeleteAccount: (password: string) => Promise<void>;
   onChangePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  formError: string;
+  fieldErrors: FieldErrors;
+  onClearFieldError: (field: string) => void;
 };
 
 export type FormState = Record<string, string>;
@@ -32,4 +36,5 @@ export type ModalFormProps = AppModalProps & {
   form: FormState;
   set: FieldSetter;
   submit: SubmitFactory;
+  fieldErrors: FieldErrors;
 };

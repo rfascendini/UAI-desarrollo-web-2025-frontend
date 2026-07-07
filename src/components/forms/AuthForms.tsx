@@ -1,4 +1,5 @@
 import { Field } from '../Field';
+import type { FieldErrors } from '../../api/api';
 import type { AppModalProps, FieldSetter, FormState, SubmitFactory } from './formTypes';
 
 type AuthFormProps = {
@@ -6,6 +7,7 @@ type AuthFormProps = {
   set: FieldSetter;
   submit: SubmitFactory;
   loading: boolean;
+  fieldErrors: FieldErrors;
 };
 
 export function LoginForm({
@@ -13,12 +15,27 @@ export function LoginForm({
   set,
   submit,
   loading,
+  fieldErrors,
   onLogin,
 }: AuthFormProps & Pick<AppModalProps, 'onLogin'>) {
   return (
     <form className="space-y-3" onSubmit={submit(() => onLogin(form.email, form.password))}>
-      <Field label="Email" type="email" value={form.email || ''} onChange={set('email')} required />
-      <Field label="Password" type="password" value={form.password || ''} onChange={set('password')} required />
+      <Field
+        label="Correo electrónico"
+        type="email"
+        value={form.email || ''}
+        onChange={set('email')}
+        error={fieldErrors.email}
+        required
+      />
+      <Field
+        label="Contraseña"
+        type="password"
+        value={form.password || ''}
+        onChange={set('password')}
+        error={fieldErrors.password}
+        required
+      />
       <button className="btn-primary w-full" disabled={loading}>
         Ingresar
       </button>
@@ -31,6 +48,7 @@ export function RegisterForm({
   set,
   submit,
   loading,
+  fieldErrors,
   onRegister,
 }: AuthFormProps & Pick<AppModalProps, 'onRegister'>) {
   return (
@@ -46,11 +64,25 @@ export function RegisterForm({
         })
       )}
     >
-      <Field label="Nombre" value={form.firstName || ''} onChange={set('firstName')} required />
-      <Field label="Apellido" value={form.lastName || ''} onChange={set('lastName')} required />
-      <Field label="Username" value={form.username || ''} onChange={set('username')} required />
-      <Field label="Email" type="email" value={form.email || ''} onChange={set('email')} required />
-      <Field label="Password" type="password" value={form.password || ''} onChange={set('password')} required />
+      <Field label="Nombre" value={form.firstName || ''} onChange={set('firstName')} error={fieldErrors.firstName} required />
+      <Field label="Apellido" value={form.lastName || ''} onChange={set('lastName')} error={fieldErrors.lastName} required />
+      <Field label="Usuario" value={form.username || ''} onChange={set('username')} error={fieldErrors.username} required />
+      <Field
+        label="Correo electrónico"
+        type="email"
+        value={form.email || ''}
+        onChange={set('email')}
+        error={fieldErrors.email}
+        required
+      />
+      <Field
+        label="Contraseña"
+        type="password"
+        value={form.password || ''}
+        onChange={set('password')}
+        error={fieldErrors.password}
+        required
+      />
       <button className="btn-primary w-full" disabled={loading}>
         Registrarse
       </button>
@@ -63,11 +95,19 @@ export function ResetPasswordForm({
   set,
   submit,
   loading,
+  fieldErrors,
   onReset,
 }: AuthFormProps & Pick<AppModalProps, 'onReset'>) {
   return (
     <form className="space-y-3" onSubmit={submit(() => onReset(form.email))}>
-      <Field label="Email" type="email" value={form.email || ''} onChange={set('email')} required />
+      <Field
+        label="Correo electrónico"
+        type="email"
+        value={form.email || ''}
+        onChange={set('email')}
+        error={fieldErrors.email}
+        required
+      />
       <button className="btn-primary w-full" disabled={loading}>
         Enviar recuperacion
       </button>

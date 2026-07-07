@@ -58,7 +58,7 @@ function RoomSummary({ room, full }: { room: Room; full: boolean }) {
           {room.isPrivate && <span className="rounded bg-yellow-600 px-2 py-0.5 text-xs font-bold">Privada</span>}
         </div>
         {room.description && <p className="text-sm text-zinc-400">{room.description}</p>}
-        <p className="text-sm text-zinc-300">Anfitrion: {room.createdBy.username}</p>
+        <p className="text-sm text-zinc-300">Anfitrión: {room.createdBy.username}</p>
       </div>
       <div className="text-right">
         <p className="text-2xl font-black text-yellow-400">{room.playerCount}/10</p>
@@ -113,7 +113,7 @@ function RoomConnection({ room, onCopy }: { room: Room; onCopy: (command: string
     <div className="mt-3 rounded border border-emerald-700 bg-emerald-950/30 p-3 text-sm">
       <p className="font-mono">IP: {room.connection.serverIP}:{room.connection.serverPort}</p>
       <p className="font-mono">{room.connection.command}</p>
-      {room.connection.serverPassword && <p>Password: {room.connection.serverPassword}</p>}
+      {room.connection.serverPassword && <p>Contraseña: {room.connection.serverPassword}</p>}
       <div className="mt-2 flex flex-wrap gap-2">
         <button className="btn-secondary" onClick={() => onCopy(`${room.connection!.serverIP}:${room.connection!.serverPort}`)}>
           Copiar IP
@@ -123,7 +123,7 @@ function RoomConnection({ room, onCopy }: { room: Room; onCopy: (command: string
         </button>
         {room.connection.serverPassword && (
           <button className="btn-secondary" onClick={() => onCopy(room.connection!.serverPassword)}>
-            Copiar password
+            Copiar contraseña
           </button>
         )}
         <a className="btn-primary" href={room.connection.steamUrl}>

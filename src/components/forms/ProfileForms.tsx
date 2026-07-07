@@ -8,6 +8,7 @@ export function ProfileForm({
   set,
   submit,
   loading,
+  fieldErrors,
   onMutation,
   onDeleteAccount,
 }: ModalFormProps) {
@@ -29,22 +30,41 @@ export function ProfileForm({
         )
       )}
     >
-      <Field label="Nombre" value={form.firstName ?? profile.firstName} onChange={set('firstName')} required />
-      <Field label="Apellido" value={form.lastName ?? profile.lastName} onChange={set('lastName')} required />
-      <Field label="Username" value={form.username ?? profile.username} onChange={set('username')} required />
+      <Field
+        label="Nombre"
+        value={form.firstName ?? profile.firstName}
+        onChange={set('firstName')}
+        error={fieldErrors.firstName}
+        required
+      />
+      <Field
+        label="Apellido"
+        value={form.lastName ?? profile.lastName}
+        onChange={set('lastName')}
+        error={fieldErrors.lastName}
+        required
+      />
+      <Field
+        label="Usuario"
+        value={form.username ?? profile.username}
+        onChange={set('username')}
+        error={fieldErrors.username}
+        required
+      />
       <button className="btn-primary w-full" disabled={loading}>
         Guardar
       </button>
       <div className="border-t border-zinc-800 pt-4">
         <p className="mb-2 text-sm font-bold text-red-300">Eliminar cuenta</p>
         <p className="mb-3 text-xs text-zinc-400">
-          Para eliminar tu cuenta, ingresa tu password actual. Si sos anfitrion, tus salas activas se cierran.
+          Para eliminar tu cuenta, ingresá tu contraseña actual. Si sos anfitrión, tus salas activas se cierran.
         </p>
         <Field
-          label="Password actual"
+          label="Contraseña actual"
           type="password"
           value={form.deletePassword || ''}
           onChange={set('deletePassword')}
+          error={fieldErrors.deletePassword}
         />
         <button
           type="button"
@@ -64,22 +84,25 @@ export function ChangePasswordForm({
   set,
   submit,
   loading,
+  fieldErrors,
   onChangePassword,
 }: ModalFormProps) {
   return (
     <form className="space-y-3" onSubmit={submit(() => onChangePassword(form.currentPassword, form.newPassword))}>
       <Field
-        label="Password actual"
+        label="Contraseña actual"
         type="password"
         value={form.currentPassword || ''}
         onChange={set('currentPassword')}
+        error={fieldErrors.currentPassword}
         required
       />
       <Field
-        label="Password nuevo"
+        label="Contraseña nueva"
         type="password"
         value={form.newPassword || ''}
         onChange={set('newPassword')}
+        error={fieldErrors.newPassword}
         required
       />
       <button className="btn-primary w-full" disabled={loading}>

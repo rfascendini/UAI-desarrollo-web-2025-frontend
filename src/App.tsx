@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   EmailAuthProvider,
+  type AuthError,
   onAuthStateChanged,
   reauthenticateWithCredential,
   sendPasswordResetEmail,
@@ -9,7 +10,7 @@ import {
   updatePassword,
   type User as FirebaseUser,
 } from 'firebase/auth';
-import { apiRequest, publicApiRequest } from './api/api';
+import { ApiError, apiRequest, publicApiRequest, type FieldErrors } from './api/api';
 import { AppModal } from './components/AppModal';
 import { AppHeader } from './components/Header';
 import { RoomsList } from './components/RoomsList';
@@ -24,6 +25,8 @@ function App() {
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
   const [error, setError] = useState('');
+  const [modalError, setModalError] = useState('');
+  const [modalFieldErrors, setModalFieldErrors] = useState<FieldErrors>({});
   const [notice, setNotice] = useState('');
   const [loading, setLoading] = useState(false);
   const pollingRef = useRef(false);
@@ -32,9 +35,34 @@ function App() {
   const canCreate = Boolean(profile && !myRoom);
 
   const getToken = useCallback(async () => {
-    if (!auth.currentUser) throw new Error('Tenes que iniciar sesion.');
+    if (!auth.currentUser) throw new Error('Tenés que iniciar sesión.');
     return auth.currentUser.getIdToken();
   }, []);
+
+  const clearModalErrors = () => {
+    setModalError('');
+    setModalFieldErrors({});
+  };
+
+  const clearModalFieldError = (field: string) => {
+    setModalFieldErrors((prev) => {
+      if (!prev[field]) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
+  const setModalApiError = (err: unknown, fallback: string, fieldErrors: FieldErrors = {}) => {
+    if (err instanceof ApiError) {
+      setModalError(err.message || fallback);
+      setModalFieldErrors(err.errors);
+      return;
+    }
+
+    setModalError(fallback);
+    setModalFieldErrors(fieldErrors);
+  };
 
   const refresh = useCallback(async () => {
     if (!auth.currentUser || pollingRef.current) return;
@@ -94,13 +122,18 @@ function App() {
   const runMutation = async (action: (token: string) => Promise<void>) => {
     setLoading(true);
     setError('');
+    clearModalErrors();
     try {
       const token = await getToken();
       await action(token);
       closeModal();
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo completar la accion.');
+      if (modal) {
+        setModalApiError(err, 'No se pudo completar la acción.');
+      } else {
+        setError(err instanceof Error ? err.message : 'No se pudo completar la acción.');
+      }
     } finally {
       setLoading(false);
     }
@@ -110,6 +143,7 @@ function App() {
     setModal(null);
     setSelectedRoom(null);
     setSelectedPlayer(null);
+    clearModalErrors();
   };
 
   const selectRoomModal = (room: Room, nextModal: Exclude<ModalName, null>) => {
@@ -151,7 +185,7 @@ function App() {
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-bold text-yellow-400">Salas disponibles</h1>
-            <p className="text-sm text-zinc-400">Equipos 5 vs 5, maximo 10 jugadores por sala.</p>
+            <p className="text-sm text-zinc-400">Equipos 5 vs 5, máximo 10 jugadores por sala.</p>
           </div>
           {profile && (
             <button className="btn-primary" disabled={!canCreate} onClick={() => setModal('create')}>
@@ -190,24 +224,26 @@ function App() {
           loading={loading}
           onClose={() => {
             closeModal();
-            setError('');
           }}
+          formError={modalError}
+          fieldErrors={modalFieldErrors}
+          onClearFieldError={clearModalFieldError}
           onLogin={async (email, password) => {
             setLoading(true);
-            setError('');
+            clearModalErrors();
             try {
               await signInWithEmailAndPassword(auth, email, password);
               closeModal();
               await refresh();
             } catch {
-              setError('Email o password incorrectos.');
+              setModalError('El correo electrónico o la contraseña son incorrectos.');
             } finally {
               setLoading(false);
             }
           }}
           onRegister={async (payload) => {
             setLoading(true);
-            setError('');
+            clearModalErrors();
             try {
               await publicApiRequest('/users/register', {
                 method: 'POST',
@@ -217,21 +253,29 @@ function App() {
               closeModal();
               await refresh();
             } catch (err) {
-              setError(err instanceof Error ? err.message : 'No se pudo registrar.');
+              setModalApiError(err, 'No se pudo registrar.');
             } finally {
               setLoading(false);
             }
           }}
           onReset={async (email) => {
-            await sendPasswordResetEmail(auth, email);
-            setNotice('Te enviamos el email de recuperacion.');
-            closeModal();
+            setLoading(true);
+            clearModalErrors();
+            try {
+              await sendPasswordResetEmail(auth, email);
+              setNotice('Te enviamos el correo de recuperación.');
+              closeModal();
+            } catch {
+              setModalError('No se pudo enviar el correo de recuperación.');
+            } finally {
+              setLoading(false);
+            }
           }}
           onMutation={runMutation}
           onDeleteAccount={async (password) => {
             if (!auth.currentUser || !profile) return;
             setLoading(true);
-            setError('');
+            clearModalErrors();
             try {
               const credential = EmailAuthProvider.credential(profile.email, password);
               await reauthenticateWithCredential(auth.currentUser, credential);
@@ -240,18 +284,34 @@ function App() {
               await signOut(auth);
               closeModal();
             } catch {
-              setError('No se pudo eliminar la cuenta. Revisa el password.');
+              setModalError('No se pudo eliminar la cuenta. Revisá la contraseña.');
+              setModalFieldErrors({ deletePassword: ['La contraseña actual no es correcta.'] });
             } finally {
               setLoading(false);
             }
           }}
           onChangePassword={async (currentPassword, newPassword) => {
             if (!auth.currentUser || !profile) return;
-            const credential = EmailAuthProvider.credential(profile.email, currentPassword);
-            await reauthenticateWithCredential(auth.currentUser, credential);
-            await updatePassword(auth.currentUser, newPassword);
-            setNotice('Password actualizado.');
-            closeModal();
+            setLoading(true);
+            clearModalErrors();
+            try {
+              const credential = EmailAuthProvider.credential(profile.email, currentPassword);
+              await reauthenticateWithCredential(auth.currentUser, credential);
+              await updatePassword(auth.currentUser, newPassword);
+              setNotice('Contraseña actualizada.');
+              closeModal();
+            } catch (err) {
+              const authError = err as AuthError;
+              if (authError.code === 'auth/weak-password') {
+                setModalFieldErrors({ newPassword: ['La contraseña debe tener al menos 8 caracteres.'] });
+                setModalError('Revisá los datos ingresados.');
+              } else {
+                setModalFieldErrors({ currentPassword: ['La contraseña actual no es correcta.'] });
+                setModalError('No se pudo actualizar la contraseña.');
+              }
+            } finally {
+              setLoading(false);
+            }
           }}
         />
       )}

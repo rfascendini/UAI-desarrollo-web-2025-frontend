@@ -2,7 +2,7 @@ import { apiRequest } from '../../api/api';
 import { Field } from '../Field';
 import type { ModalFormProps } from './formTypes';
 
-export function RoomForm({ modal, room, form, set, submit, loading, onMutation }: ModalFormProps) {
+export function RoomForm({ modal, room, form, set, submit, loading, fieldErrors, onMutation }: ModalFormProps) {
   const isEditing = modal === 'edit';
   const isPrivate = form.isPrivate === undefined ? Boolean(room?.isPrivate) : form.isPrivate === 'true';
 
@@ -26,12 +26,24 @@ export function RoomForm({ modal, room, form, set, submit, loading, onMutation }
         )
       )}
     >
-      <Field label="Nombre" value={form.name ?? room?.name ?? ''} onChange={set('name')} required />
-      <Field label="Descripcion" value={form.description ?? room?.description ?? ''} onChange={set('description')} />
+      <Field
+        label="Nombre"
+        value={form.name ?? room?.name ?? ''}
+        onChange={set('name')}
+        error={fieldErrors.name}
+        required
+      />
+      <Field
+        label="Descripción"
+        value={form.description ?? room?.description ?? ''}
+        onChange={set('description')}
+        error={fieldErrors.description}
+      />
       <Field
         label="IP del servidor"
         value={form.serverIP ?? room?.connection?.serverIP ?? ''}
         onChange={set('serverIP')}
+        error={fieldErrors.serverIP}
         required
       />
       <Field
@@ -39,14 +51,27 @@ export function RoomForm({ modal, room, form, set, submit, loading, onMutation }
         type="number"
         value={form.serverPort ?? String(room?.connection?.serverPort ?? 27015)}
         onChange={set('serverPort')}
+        error={fieldErrors.serverPort}
         required
       />
       <label className="flex items-center gap-2 text-sm">
         <input type="checkbox" checked={isPrivate} onChange={(event) => set('isPrivate')(String(event.target.checked))} />
         Sala privada
       </label>
-      <Field label="Password de sala privada" type="password" value={form.roomPassword || ''} onChange={set('roomPassword')} />
-      <Field label="Password del servidor" type="password" value={form.serverPassword || ''} onChange={set('serverPassword')} />
+      <Field
+        label="Contraseña de sala privada"
+        type="password"
+        value={form.roomPassword || ''}
+        onChange={set('roomPassword')}
+        error={fieldErrors.roomPassword}
+      />
+      <Field
+        label="Contraseña del servidor"
+        type="password"
+        value={form.serverPassword || ''}
+        onChange={set('serverPassword')}
+        error={fieldErrors.serverPassword}
+      />
       <button className="btn-primary w-full" disabled={loading}>
         {isEditing ? 'Guardar' : 'Crear'}
       </button>
@@ -54,7 +79,7 @@ export function RoomForm({ modal, room, form, set, submit, loading, onMutation }
   );
 }
 
-export function JoinRoomForm({ room, form, set, submit, loading, onMutation }: ModalFormProps) {
+export function JoinRoomForm({ room, form, set, submit, loading, fieldErrors, onMutation }: ModalFormProps) {
   if (!room) return null;
 
   return (
@@ -72,9 +97,23 @@ export function JoinRoomForm({ room, form, set, submit, loading, onMutation }: M
         )
       )}
     >
-      <Field label="Posicion 1 a 10" type="number" value={form.position || ''} onChange={set('position')} required />
+      <Field
+        label="Posición 1 a 10"
+        type="number"
+        value={form.position || ''}
+        onChange={set('position')}
+        error={fieldErrors.position}
+        required
+      />
       {room.isPrivate && (
-        <Field label="Password de sala" type="password" value={form.roomPassword || ''} onChange={set('roomPassword')} required />
+        <Field
+          label="Contraseña de sala"
+          type="password"
+          value={form.roomPassword || ''}
+          onChange={set('roomPassword')}
+          error={fieldErrors.roomPassword}
+          required
+        />
       )}
       <button className="btn-primary w-full" disabled={loading}>
         Unirse
@@ -83,7 +122,7 @@ export function JoinRoomForm({ room, form, set, submit, loading, onMutation }: M
   );
 }
 
-export function MovePlayerForm({ room, player, form, set, submit, loading, onMutation }: ModalFormProps) {
+export function MovePlayerForm({ room, player, form, set, submit, loading, fieldErrors, onMutation }: ModalFormProps) {
   if (!room || !player) return null;
 
   return (
@@ -99,10 +138,11 @@ export function MovePlayerForm({ room, player, form, set, submit, loading, onMut
       )}
     >
       <Field
-        label={`Nueva posicion para ${player.user.username}`}
+        label={`Nueva posición para ${player.user.username}`}
         type="number"
         value={form.position || ''}
         onChange={set('position')}
+        error={fieldErrors.position}
         required
       />
       <button className="btn-primary w-full" disabled={loading}>
@@ -149,7 +189,7 @@ export function RoomLifecycleForm({ modal, room, submit, loading, onMutation }: 
         )
       )}
     >
-      <p className="text-sm text-zinc-300">Esta accion se aplica inmediatamente.</p>
+      <p className="text-sm text-zinc-300">Esta acción se aplica inmediatamente.</p>
       <button className="btn-danger w-full" disabled={loading}>
         Confirmar
       </button>

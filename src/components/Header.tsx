@@ -1,5 +1,5 @@
-import { initials } from '../helpers';
 import type { UserProfile } from '../types';
+import { userInitials } from '../utils/userInitials';
 
 type AppHeaderProps = {
   profile: UserProfile | null;
@@ -26,7 +26,7 @@ export function AppHeader({
       {profile ? (
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 font-bold">
-            {initials(profile.firstName, profile.lastName)}
+            {userInitials(profile.firstName, profile.lastName)}
           </div>
           <span className="font-semibold">{profile.username}</span>
           <button className="btn-secondary" onClick={onEditProfile}>

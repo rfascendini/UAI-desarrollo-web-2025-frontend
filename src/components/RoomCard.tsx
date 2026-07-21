@@ -1,5 +1,5 @@
-import { initials } from '../helpers';
 import type { Player, Room } from '../types';
+import { userInitials } from '../utils/userInitials';
 
 type RoomCardProps = {
   room: Room;
@@ -82,7 +82,7 @@ function RoomTeams({ slots }: { slots: Array<Player | null> }) {
                   {player ? (
                     <>
                       <div className="mx-auto flex h-9 w-9 items-center justify-center rounded-full bg-orange-600 text-sm font-bold">
-                        {initials(player.user.firstName, player.user.lastName)}
+                        {userInitials(player.user.firstName, player.user.lastName)}
                       </div>
                       <p className="mt-1 truncate text-xs font-semibold">{player.user.username}</p>
                     </>

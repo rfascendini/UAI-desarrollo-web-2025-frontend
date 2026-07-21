@@ -1,7 +1,7 @@
 import type { Player, Room } from '../types';
 import { RoomCard } from './RoomCard';
 
-type RoomsSectionProps = {
+type RoomsListProps = {
   profileExists: boolean;
   rooms: Room[];
   onJoin: (room: Room) => void;
@@ -23,9 +23,9 @@ export function RoomsList({
   onKick,
   onTransfer,
   onCopy,
-}: RoomsSectionProps) {
+}: RoomsListProps) {
   return (
-    <section className="min-h-0 flex-1 overflow-y-auto pr-2">
+    <section className="min-h-0 flex-1 overflow-y-auto">
       {!profileExists && (
         <div className="rounded border border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-300">
           Iniciá sesión para ver y crear salas.

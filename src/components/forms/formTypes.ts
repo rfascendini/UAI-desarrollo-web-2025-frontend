@@ -2,6 +2,7 @@ import type { FormEvent } from 'react';
 import type { FieldErrors } from '../../api/api';
 import type { ModalName, Player, Room, UserProfile } from '../../types';
 
+// Tipos compartidos por los formularios que se muestran dentro de AppModal.
 export type MutationRunner = (action: (token: string) => Promise<void>) => Promise<void>;
 
 export type AppModalProps = {

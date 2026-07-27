@@ -8,7 +8,7 @@ export function PrivateRoute({ children }: { children: ReactNode }) {
   if (initializing) {
     return (
       <main className="flex flex-1 items-center justify-center text-sm text-zinc-400">
-        Cargando sesion...
+        Cargando sesión...
       </main>
     );
   }

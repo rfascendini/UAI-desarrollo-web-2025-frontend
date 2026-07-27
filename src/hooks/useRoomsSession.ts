@@ -22,7 +22,7 @@ export function useRoomsSession() {
   );
 
   const getToken = useCallback(async () => {
-    if (!auth.currentUser) throw new Error('Tenes que iniciar sesion.');
+    if (!auth.currentUser) throw new Error('Tenés que iniciar sesión.');
     return auth.currentUser.getIdToken();
   }, []);
 

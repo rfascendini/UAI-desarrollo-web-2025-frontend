@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 import { RoomsList } from '../components/RoomsList';
 import { publicApiRequest } from '../api/api';
+import { usePageTitle } from '../hooks/usePageTitle';
 import type { Room } from '../types';
 
 type HomePageProps = {
   profileExists: boolean;
-  onRequireLogin: () => void;
+  onPrivateAccess: () => void;
 };
 
 const ignoreRoom = () => undefined;
 const ignorePlayer = () => undefined;
 
-export function HomePage({ profileExists, onRequireLogin }: HomePageProps) {
+export function HomePage({ profileExists, onPrivateAccess }: HomePageProps) {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [error, setError] = useState('');
+  usePageTitle('5YA CS1.6 - Index');
 
   useEffect(() => {
     let cancelled = false;
@@ -46,14 +48,12 @@ export function HomePage({ profileExists, onRequireLogin }: HomePageProps) {
     <main className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-6 py-5">
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-yellow-400">Salas publicas</h1>
-          <p className="text-sm text-zinc-400">Datos activos traidos desde el backend y MongoDB.</p>
+          <h1 className="text-2xl font-bold text-yellow-400">Salas públicas</h1>
+          <p className="text-sm text-zinc-400">Datos activos traídos desde el backend y MongoDB.</p>
         </div>
-        {!profileExists && (
-          <button className="btn-primary" onClick={onRequireLogin}>
-            Iniciar sesion
-          </button>
-        )}
+        <button className="btn-primary" onClick={onPrivateAccess}>
+          {profileExists ? 'Ir al panel privado' : 'Iniciar sesión'}
+        </button>
       </div>
 
       {error && <div className="mb-3 rounded border border-red-500 bg-red-950/60 px-3 py-2 text-sm">{error}</div>}
@@ -69,7 +69,7 @@ export function HomePage({ profileExists, onRequireLogin }: HomePageProps) {
         onKick={ignorePlayer}
         onTransfer={ignorePlayer}
         onCopy={() => undefined}
-        onRequireLogin={onRequireLogin}
+        onRequireLogin={onPrivateAccess}
       />
     </main>
   );

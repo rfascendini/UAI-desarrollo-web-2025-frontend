@@ -51,6 +51,7 @@ export function RoomsList({
           onKick={(player) => onKick(room, player)}
           onTransfer={(player) => onTransfer(room, player)}
           onCopy={onCopy}
+          hideActions={publicView}
           profileExists={profileExists}
           onRequireLogin={onRequireLogin}
         />

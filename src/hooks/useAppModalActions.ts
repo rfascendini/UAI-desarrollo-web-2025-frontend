@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import {
   EmailAuthProvider,
   type AuthError,
@@ -37,10 +37,10 @@ export function useAppModalActions({
   const [modalFieldErrors, setModalFieldErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
 
-  const clearModalErrors = () => {
+  const clearModalErrors = useCallback(() => {
     setModalError('');
     setModalFieldErrors({});
-  };
+  }, []);
 
   const clearModalFieldError = (field: string) => {
     setModalFieldErrors((prev) => {
@@ -202,6 +202,7 @@ export function useAppModalActions({
   return {
     modal,
     appModalProps,
+    clearModalErrors,
     openModal,
     openRoomModal,
     openPlayerModal,

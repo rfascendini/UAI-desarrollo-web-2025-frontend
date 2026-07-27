@@ -10,6 +10,7 @@ type RoomCardProps = {
   onKick: (player: Player) => void;
   onTransfer: (player: Player) => void;
   onCopy: (command: string) => void;
+  hideActions?: boolean;
   profileExists?: boolean;
   onRequireLogin?: () => void;
 };
@@ -23,6 +24,7 @@ export function RoomCard({
   onKick,
   onTransfer,
   onCopy,
+  hideActions = false,
   profileExists = true,
   onRequireLogin,
 }: RoomCardProps) {
@@ -38,18 +40,20 @@ export function RoomCard({
       <RoomSummary room={room} full={full} />
       <RoomTeams slots={slots} />
       <RoomConnection room={room} onCopy={onCopy} />
-      <RoomActions
-        room={room}
-        full={full}
-        onJoin={onJoin}
-        onLeave={onLeave}
-        onEdit={onEdit}
-        onMove={onMove}
-        onKick={onKick}
-        onTransfer={onTransfer}
-        profileExists={profileExists}
-        onRequireLogin={onRequireLogin}
-      />
+      {!hideActions && (
+        <RoomActions
+          room={room}
+          full={full}
+          onJoin={onJoin}
+          onLeave={onLeave}
+          onEdit={onEdit}
+          onMove={onMove}
+          onKick={onKick}
+          onTransfer={onTransfer}
+          profileExists={profileExists}
+          onRequireLogin={onRequireLogin}
+        />
+      )}
     </article>
   );
 }
@@ -156,7 +160,7 @@ function RoomActions({
     return (
       <div className="mt-3 flex flex-wrap gap-2">
         <button className="btn-primary" onClick={onRequireLogin}>
-          Iniciar sesion para participar
+          Iniciar sesión para participar
         </button>
       </div>
     );

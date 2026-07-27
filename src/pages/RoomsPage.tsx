@@ -1,4 +1,5 @@
 import { RoomsList } from '../components/RoomsList';
+import { usePageTitle } from '../hooks/usePageTitle';
 import type { Player, Room, UserProfile } from '../types';
 
 type RoomsPageProps = {
@@ -32,6 +33,8 @@ export function RoomsPage({
   onTransfer,
   onCopy,
 }: RoomsPageProps) {
+  usePageTitle('5YA CS1.6 - Salas');
+
   return (
     <main className="mx-auto flex min-h-0 w-full max-w-6xl flex-1 flex-col px-6 py-5">
       <div className="mb-4 flex items-center justify-between">

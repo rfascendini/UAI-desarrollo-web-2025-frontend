@@ -25,12 +25,17 @@ function App() {
     navigate('/', { replace: true });
   };
 
+  const goToAuth = (path: '/login' | '/registro') => {
+    modalActions.clearModalErrors();
+    navigate(path);
+  };
+
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-[#070b12] text-white">
       <AppHeader
         profile={roomsSession.profile}
-        onLogin={() => navigate('/login')}
-        onRegister={() => navigate('/registro')}
+        onLogin={() => goToAuth('/login')}
+        onRegister={() => goToAuth('/registro')}
         onResetPassword={() => modalActions.openModal('reset')}
         onEditProfile={() => modalActions.openModal('profile')}
         onChangePassword={() => modalActions.openModal('password')}
@@ -40,15 +45,40 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<HomePage profileExists={Boolean(roomsSession.profile)} onRequireLogin={() => navigate('/login')} />}
+          element={
+            <HomePage
+              profileExists={Boolean(roomsSession.profile)}
+              onPrivateAccess={() => {
+                if (roomsSession.profile) {
+                  navigate('/salas');
+                  return;
+                }
+                goToAuth('/login');
+              }}
+            />
+          }
         />
         <Route
           path="/login"
-          element={<AuthPage mode="login" profile={roomsSession.profile} authProps={modalActions.appModalProps} />}
+          element={
+            <AuthPage
+              mode="login"
+              profile={roomsSession.profile}
+              authProps={modalActions.appModalProps}
+              onRouteEnter={modalActions.clearModalErrors}
+            />
+          }
         />
         <Route
           path="/registro"
-          element={<AuthPage mode="register" profile={roomsSession.profile} authProps={modalActions.appModalProps} />}
+          element={
+            <AuthPage
+              mode="register"
+              profile={roomsSession.profile}
+              authProps={modalActions.appModalProps}
+              onRouteEnter={modalActions.clearModalErrors}
+            />
+          }
         />
         <Route
           path="/salas"

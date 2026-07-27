@@ -109,7 +109,7 @@ export function ResetPasswordForm({
         required
       />
       <button className="btn-primary w-full" disabled={loading}>
-        Enviar recuperacion
+        Enviar recuperación
       </button>
     </form>
   );

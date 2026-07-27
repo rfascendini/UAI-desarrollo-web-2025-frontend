@@ -1,17 +1,25 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { LoginForm, RegisterForm } from '../components/forms/AuthForms';
 import type { AppModalProps, FormState } from '../components/forms/formTypes';
+import { usePageTitle } from '../hooks/usePageTitle';
 import type { UserProfile } from '../types';
 
 type AuthPageProps = {
   mode: 'login' | 'register';
   profile: UserProfile | null;
   authProps: AppModalProps;
+  onRouteEnter: () => void;
 };
 
-export function AuthPage({ mode, profile, authProps }: AuthPageProps) {
+export function AuthPage({ mode, profile, authProps, onRouteEnter }: AuthPageProps) {
   const [form, setForm] = useState<FormState>({});
+  usePageTitle(mode === 'login' ? '5YA CS1.6 - Login' : '5YA CS1.6 - Registro');
+
+  useEffect(() => {
+    setForm({});
+    onRouteEnter();
+  }, [mode, onRouteEnter]);
 
   if (profile) {
     return <Navigate to="/salas" replace />;
@@ -31,7 +39,7 @@ export function AuthPage({ mode, profile, authProps }: AuthPageProps) {
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center px-6 py-8">
       <section className="rounded-md border border-yellow-500/60 bg-zinc-950 p-5 shadow-2xl shadow-black">
         <h1 className="mb-1 text-xl font-bold text-yellow-400">
-          {mode === 'login' ? 'Iniciar sesion' : 'Crear cuenta'}
+          {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
         </h1>
         <p className="mb-4 text-sm text-zinc-400">
           {mode === 'login' ? 'Entrar a la ruta privada de salas.' : 'Registrate para administrar salas.'}
@@ -65,11 +73,11 @@ export function AuthPage({ mode, profile, authProps }: AuthPageProps) {
 
         <div className="mt-4 text-center text-sm text-zinc-400">
           {mode === 'login' ? (
-            <Link className="font-bold text-yellow-400" to="/registro">
+            <Link className="font-bold text-yellow-400" to="/registro" onClick={onRouteEnter}>
               Crear una cuenta
             </Link>
           ) : (
-            <Link className="font-bold text-yellow-400" to="/login">
+            <Link className="font-bold text-yellow-400" to="/login" onClick={onRouteEnter}>
               Ya tengo cuenta
             </Link>
           )}

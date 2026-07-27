@@ -23,7 +23,7 @@ const MODAL_TITLES = {
   move: 'Mover jugador',
   kick: 'Expulsar jugador',
   transfer: 'Transferir liderazgo',
-  close: 'Cerrar sala',
+  close: 'Eliminar sala',
   leave: 'Abandonar sala',
 } as const;
 

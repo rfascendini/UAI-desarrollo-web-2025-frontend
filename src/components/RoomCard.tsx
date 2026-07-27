@@ -167,7 +167,7 @@ function RoomActions({
       {room.isMember ? (
         <>
           <button className="btn-secondary" onClick={onLeave}>
-            {room.isHost ? 'Cerrar sala' : 'Abandonar'}
+            {room.isHost ? 'Eliminar sala' : 'Abandonar'}
           </button>
           {room.isHost && (
             <button className="btn-primary" onClick={onEdit}>

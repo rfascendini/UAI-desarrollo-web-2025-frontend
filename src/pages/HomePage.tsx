@@ -18,21 +18,27 @@ export function HomePage({ profileExists, onRequireLogin }: HomePageProps) {
   useEffect(() => {
     let cancelled = false;
 
-    publicApiRequest<{ rooms: Room[] }>('/rooms/public')
-      .then((data) => {
-        if (!cancelled) {
-          setRooms(data.rooms);
-          setError('');
-        }
-      })
-      .catch((err) => {
-        if (!cancelled) {
-          setError(err instanceof Error ? err.message : 'No se pudieron cargar las salas.');
-        }
-      });
+    const refreshPublicRooms = () => {
+      publicApiRequest<{ rooms: Room[] }>('/rooms/public')
+        .then((data) => {
+          if (!cancelled) {
+            setRooms(data.rooms);
+            setError('');
+          }
+        })
+        .catch((err) => {
+          if (!cancelled) {
+            setError(err instanceof Error ? err.message : 'No se pudieron cargar las salas.');
+          }
+        });
+    };
+
+    refreshPublicRooms();
+    const interval = window.setInterval(refreshPublicRooms, 5000);
 
     return () => {
       cancelled = true;
+      window.clearInterval(interval);
     };
   }, []);
 

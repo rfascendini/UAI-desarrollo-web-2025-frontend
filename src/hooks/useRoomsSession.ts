@@ -22,7 +22,7 @@ export function useRoomsSession() {
   );
 
   const getToken = useCallback(async () => {
-    if (!auth.currentUser) throw new Error('Tenés que iniciar sesión.');
+    if (!auth.currentUser) throw new Error('Tenes que iniciar sesion.');
     return auth.currentUser.getIdToken();
   }, []);
 
@@ -65,24 +65,6 @@ export function useRoomsSession() {
     return () => window.clearInterval(interval);
   }, [firebaseUser, refresh]);
 
-  useEffect(() => {
-    const handler = () => {
-      if (!myRoom || !firebaseUser) return;
-      void firebaseUser.getIdToken().then((token) => {
-        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000/api'}/rooms/${myRoom.id}/leave`, {
-          method: 'POST',
-          keepalive: true,
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        }).catch(() => undefined);
-      });
-    };
-    window.addEventListener('pagehide', handler);
-    return () => window.removeEventListener('pagehide', handler);
-  }, [firebaseUser, myRoom]);
-
   const copyCommand = (command: string) => {
     navigator.clipboard
       .writeText(command)
@@ -91,15 +73,6 @@ export function useRoomsSession() {
   };
 
   const logout = async () => {
-    if (myRoom) {
-      try {
-        const token = await getToken();
-        await apiRequest(`/rooms/${myRoom.id}/leave`, token, { method: 'POST' });
-        await refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'No se pudo completar la acción.');
-      }
-    }
     await signOut(auth);
   };
 

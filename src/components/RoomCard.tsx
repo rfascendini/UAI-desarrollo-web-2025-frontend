@@ -10,6 +10,8 @@ type RoomCardProps = {
   onKick: (player: Player) => void;
   onTransfer: (player: Player) => void;
   onCopy: (command: string) => void;
+  profileExists?: boolean;
+  onRequireLogin?: () => void;
 };
 
 export function RoomCard({
@@ -21,6 +23,8 @@ export function RoomCard({
   onKick,
   onTransfer,
   onCopy,
+  profileExists = true,
+  onRequireLogin,
 }: RoomCardProps) {
   const slots = Array.from({ length: 10 }, (_, index) => {
     const position = index + 1;
@@ -43,6 +47,8 @@ export function RoomCard({
         onMove={onMove}
         onKick={onKick}
         onTransfer={onTransfer}
+        profileExists={profileExists}
+        onRequireLogin={onRequireLogin}
       />
     </article>
   );
@@ -143,7 +149,19 @@ function RoomActions({
   onMove,
   onKick,
   onTransfer,
+  profileExists = true,
+  onRequireLogin,
 }: Omit<RoomCardProps, 'onCopy'> & { full: boolean }) {
+  if (!profileExists) {
+    return (
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button className="btn-primary" onClick={onRequireLogin}>
+          Iniciar sesion para participar
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-3 flex flex-wrap gap-2">
       {room.isMember ? (

@@ -10,6 +10,7 @@ export function useRoomsSession() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
+  const [initializing, setInitializing] = useState(true);
   const pollingRef = useRef(false);
 
   const myRoom = rooms.find((room) => room.isMember) || null;
@@ -48,9 +49,11 @@ export function useRoomsSession() {
       if (!user) {
         setProfile(null);
         setRooms([]);
+        setInitializing(false);
         return;
       }
       await refresh();
+      setInitializing(false);
     });
   }, [refresh]);
 
@@ -105,6 +108,7 @@ export function useRoomsSession() {
     rooms: orderedRooms,
     myRoom,
     canCreate,
+    initializing,
     error,
     notice,
     refresh,

@@ -19,6 +19,7 @@ type UseAppModalActionsParams = {
   getToken: () => Promise<string>;
   setError: (message: string) => void;
   setNotice: (message: string) => void;
+  onAuthSuccess?: () => void;
 };
 
 export function useAppModalActions({
@@ -27,6 +28,7 @@ export function useAppModalActions({
   getToken,
   setError,
   setNotice,
+  onAuthSuccess,
 }: UseAppModalActionsParams) {
   const [modal, setModal] = useState<ModalName>(null);
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
@@ -115,6 +117,7 @@ export function useAppModalActions({
         await signInWithEmailAndPassword(auth, email, password);
         closeModal();
         await refresh();
+        onAuthSuccess?.();
       } catch {
         setModalError('El correo electrónico o la contraseña son incorrectos.');
       } finally {
@@ -132,6 +135,7 @@ export function useAppModalActions({
         await signInWithEmailAndPassword(auth, payload.email, payload.password);
         closeModal();
         await refresh();
+        onAuthSuccess?.();
       } catch (err) {
         setModalApiError(err, 'No se pudo registrar.');
       } finally {

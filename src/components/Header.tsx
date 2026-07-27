@@ -1,3 +1,4 @@
+import { NavLink } from 'react-router-dom';
 import type { UserProfile } from '../types';
 import { userInitials } from '../utils/userInitials';
 
@@ -22,7 +23,17 @@ export function AppHeader({
 }: AppHeaderProps) {
   return (
     <header className="flex h-20 shrink-0 items-center justify-between border-b border-yellow-500/60 bg-black px-8 shadow-lg">
-      <div className="text-3xl font-black text-yellow-400">CS1.6 5YA!</div>
+      <div className="flex items-center gap-6">
+        <div className="text-3xl font-black text-yellow-400">CS1.6 5YA!</div>
+        <nav className="flex gap-2 text-sm font-bold">
+          <NavLink className={({ isActive }) => (isActive ? 'text-yellow-400' : 'text-zinc-300 hover:text-white')} to="/">
+            Publico
+          </NavLink>
+          <NavLink className={({ isActive }) => (isActive ? 'text-yellow-400' : 'text-zinc-300 hover:text-white')} to="/salas">
+            Privado
+          </NavLink>
+        </nav>
+      </div>
       {profile ? (
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-600 font-bold">

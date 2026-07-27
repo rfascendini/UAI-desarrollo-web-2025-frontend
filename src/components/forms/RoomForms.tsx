@@ -177,7 +177,7 @@ export function PlayerActionForm({ modal, room, player, submit, loading, onMutat
   );
 }
 
-export function RoomLifecycleForm({ modal, room, submit, loading, onMutation }: ModalFormProps) {
+export function RoomLifecycleForm({ modal, room, submit, loading, onMutation, onClose }: ModalFormProps) {
   if (!room || (modal !== 'leave' && modal !== 'close')) return null;
 
   return (
@@ -190,9 +190,14 @@ export function RoomLifecycleForm({ modal, room, submit, loading, onMutation }: 
       )}
     >
       <p className="text-sm text-zinc-300">Esta acción se aplica inmediatamente.</p>
-      <button className="btn-danger w-full" disabled={loading}>
-        Confirmar
-      </button>
+      <div className="flex gap-2">
+        <button type="button" className="btn-secondary flex-1" disabled={loading} onClick={onClose}>
+          Cancelar
+        </button>
+        <button className="btn-danger flex-1" disabled={loading}>
+          Confirmar
+        </button>
+      </div>
     </form>
   );
 }

@@ -4,6 +4,7 @@ import { RoomCard } from './RoomCard';
 type RoomsListProps = {
   profileExists: boolean;
   rooms: Room[];
+  publicView?: boolean;
   onJoin: (room: Room) => void;
   onLeave: (room: Room) => void;
   onEdit: (room: Room) => void;
@@ -11,11 +12,13 @@ type RoomsListProps = {
   onKick: (room: Room, player: Player) => void;
   onTransfer: (room: Room, player: Player) => void;
   onCopy: (command: string) => void;
+  onRequireLogin?: () => void;
 };
 
 export function RoomsList({
   profileExists,
   rooms,
+  publicView = false,
   onJoin,
   onLeave,
   onEdit,
@@ -23,15 +26,16 @@ export function RoomsList({
   onKick,
   onTransfer,
   onCopy,
+  onRequireLogin,
 }: RoomsListProps) {
   return (
     <section className="min-h-0 flex-1 overflow-y-auto">
-      {!profileExists && (
+      {!profileExists && !publicView && (
         <div className="rounded border border-zinc-800 bg-zinc-950 p-8 text-center text-zinc-300">
           Iniciá sesión para ver y crear salas.
         </div>
       )}
-      {profileExists && rooms.length === 0 && (
+      {rooms.length === 0 && (
         <div className="rounded border border-dashed border-zinc-700 bg-zinc-950 p-8 text-center text-zinc-300">
           Todavía no hay salas activas.
         </div>
@@ -47,6 +51,8 @@ export function RoomsList({
           onKick={(player) => onKick(room, player)}
           onTransfer={(player) => onTransfer(room, player)}
           onCopy={onCopy}
+          profileExists={profileExists}
+          onRequireLogin={onRequireLogin}
         />
       ))}
     </section>
